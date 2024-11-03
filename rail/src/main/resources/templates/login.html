@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SmartRail</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #FF6B6B;
+      --secondary-color: #4ECDC4;
+      --accent-color: #000000;
+      --dark-color: #000000;
+      --light-color: #ECF0F1;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes trainMove {
+      0% {
+        transform: translateX(-100%) rotate(0deg);
+        filter: brightness(1);
+      }
+      50% {
+        filter: brightness(1.2);
+      }
+      100% {
+        transform: translateX(100%) rotate(0deg);
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes railwayLights {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      25% {
+        transform: translateY(-15px) rotate(-5deg);
+      }
+      75% {
+        transform: translateY(-5px) rotate(5deg);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(-45deg, #2C3E50, #60a8ef, #407ab1, #213957);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .train-track {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 12px;
+      background: repeating-linear-gradient(
+              90deg,
+              var(--dark-color),
+              var(--dark-color) 50px,
+              var(--light-color) 50px,
+              var(--light-color) 60px
+      );
+    }
+
+    .railway-lights {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(
+              90deg,
+              rgb(228, 27, 45),
+              rgba(255, 215, 0, 0.6) 10px,
+              transparent 10px,
+              transparent 40px
+      );
+      animation: railwayLights 2s infinite;
+    }
+
+    .moving-train {
+      position: fixed;
+      bottom: 12px;
+      left: 0;
+      font-size: 3rem;
+      color: var(--primary-color);
+      animation: trainMove 20s linear infinite;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+      z-index: 2;
+    }
+
+    .smoke {
+      position: absolute;
+      font-size: 1.5rem;
+      color: rgba(51, 50, 50, 0.5);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-container {
+      display: flex;
+      max-width: 900px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .login-container:hover {
+      transform: translateY(-5px);
+    }
+
+    .login-image {
+      flex: 1;
+      background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-image::after {
+      content: "🚂";
+      font-size: 8rem;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .login-image::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg,
+      rgba(78, 205, 196, 0.2),
+      rgba(69, 183, 175, 0.4));
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    .login-form {
+      flex: 1;
+      background: #86c8c2;
+      padding: 3rem 2rem;
+      position: relative;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .form-title {
+      color: var(--dark-color);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .form-title::after {
+      content: "🎫";
+      font-size: 1.5rem;
+      position: absolute;
+      right: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .form-floating {
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .form-floating:hover {
+      transform: translateX(5px);
+    }
+
+    .form-control {
+      border: 2px solid #e0e0e0;
+      border-radius: 15px;
+      padding: 1rem 1.25rem;
+      height: 3.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+      transform: translateZ(10px);
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border: none;
+      border-radius: 15px;
+      padding: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+              120deg,
+              transparent,
+              rgba(255, 255, 255, 0.3),
+              transparent
+      );
+      transition: 0.5s;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      background: #ff8585;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .social-login {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    .social-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: white;
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .social-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(0);
+      transition: 0.5s;
+      border-radius: 50%;
+    }
+
+    .social-btn:hover::before {
+      transform: scale(1);
+    }
+
+    .social-btn.google { background: #0a3e0f; }
+    .social-btn.facebook { background: #1e6dc5; }
+    .social-btn.twitter { background: #000000; }
+
+    .social-btn:hover {
+      transform: rotate(360deg) scale(1.1);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .links {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .links a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+
+    .links a:hover::after {
+      width: 100%;
+    }
+
+    .links a:hover {
+      color: var(--accent-color);
+      transform: translateX(5px);
+    }
+
+    .alert {
+      border-radius: 15px;
+      border: none;
+      margin-bottom: 1.5rem;
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @media (max-width: 768px) {
+      .login-image {
+        display: none;
+      }
+
+      .login-container {
+        max-width: 400px;
+      }
+
+      .login-form {
+        padding: 2rem 1.5rem;
+      }
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      cursor: pointer;
+      color: var(--dark-color);
+      transition: all 0.3s ease;
+    }
+
+    .password-toggle:hover {
+      color: var(--primary-color);
+      transform: translateY(-50%) scale(1.2);
+    }
+
+    .form-check-input:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      animation: pulse 0.5s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+<div class="railway-lights"></div>
+<div class="train-track"></div>
+<div class="moving-train">
+  🚂
+  <span class="smoke" style="top: -20px; left: -10px;">💨</span>
+  <span class="smoke" style="top: -30px; left: -20px;">💨</span>
+</div>
+
+<div class="container">
+  <div class="login-container">
+    <div class="login-image">
+      <h1 class="mb-4">Welcome to SmartRail</h1>
+      <p class="text-center">Your journey begins here!</p>
+    </div>
+
+    <div class="login-form">
+      <h2 class="form-title">Hop Aboard!</h2>
+
+      <!-- Success Message -->
+      <div th:if="${success}" class="alert alert-success" role="alert">
+        <span th:text="${success}"></span>
+      </div>
+
+      <!-- Error Message -->
+      <div th:if="${error}" class="alert alert-danger" role="alert">
+        <span th:text="${error}"></span>
+      </div>
+
+      <!-- Login Form -->
+      <form th:action="@{/login}" method="post">
+        <div class="form-floating">
+          <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+          <label for="email">Email address</label>
+        </div>
+
+        <div class="form-floating">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+          <label for="password">Password</label>
+          <span class="password-toggle" onclick="togglePassword()">
+              <i class="far fa-eye" id="passwordToggle"></i>
+            </span>
+        </div>
+
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="rememberMe" name="remember-me">
+          <label class="form-check-label" for="rememberMe">Remember me</label>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">All Aboard!</button>
+        </div>
+      </form>
+
+      <div class="social-login">
+        <a href="/oauth2/authorization/google" class="social-btn google" title="Login with Google">
+          <i class="fab fa-google"></i>
+        </a>
+        <a href="/oauth2/authorization/facebook" class="social-btn facebook" title="Login with Facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="/oauth2/authorization/twitter" class="social-btn twitter" title="Login with Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </div>
+
+      <div class="links">
+        <p>New passenger? <a th:href="@{/register}">Register here</a></p>
+        <p><a th:href="@{/forgot}">Forgot your Password?</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('passwordToggle');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleIcon.classList.remove('fa-eye');
+      toggleIcon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      toggleIcon.classList.remove('fa-eye-slash');
+      toggleIcon.classList.add('fa-eye');
+    }
+  }
+</script>
+</body>
+</html>

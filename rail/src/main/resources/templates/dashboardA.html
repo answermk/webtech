@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <title th:text="#{dashboard}">SmartRail Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-color: #455d75;
+            --bg-color: #ecf0f1;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+        }
+
+        .stats-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .stats-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .stats-label {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: rgba(44, 62, 80, 0.05);
+            border-bottom: 2px solid var(--accent-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+            transform: scale(1.01);
+        }
+
+        .badge {
+            padding: 0.5em 1em;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .bg-success {
+            background-color: var(--success-color) !important;
+        }
+
+        .bg-warning {
+            background-color: var(--warning-color) !important;
+        }
+
+        .bg-danger {
+            background-color: var(--danger-color) !important;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .language-selector {
+            cursor: pointer;
+            padding: 6px 12px;
+            margin: 0 5px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .language-selector:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .language-selector.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Custom Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Spinner Animation */
+        #loadingSpinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pagination Styling */
+        .pagination {
+            gap: 5px;
+        }
+
+        .page-link {
+            border-radius: 8px;
+            border: none;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover {
+            background-color: var(--accent-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+            border-color: var(--accent-color);
+        }
+
+        /* Alert Animations */
+        .alert {
+            animation: slideIn 0.5s ease-out;
+            border-radius: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-train me-2"></i>SmartRail Admin
+        </a>
+        <p class="text-white mb-0 ms-3" th:text="${ ''+ session.loggedInUser?.firstname + ' ' + session.loggedInUser?.role}"></p>
+        <!--  <span class="text-white" th:text="${session.loggedInUser?.role}">Admin</span>-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a th:href="@{/admin}" class="nav-link active">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/trains}" class="nav-link">Train Management</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/schedules}" class="nav-link">Schedule Management</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/users}" class="nav-link">User Management</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/admin/reports}" class="nav-link">Reports</a>
+                </li>
+
+            </ul>
+            <!-- Language selector with null check -->
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <div class="d-flex align-items-center ms-auto me-3">
+                        <a class="language-selector" th:classappend="${#locale != null && #locale.language == 'en'} ? 'active'"
+                           th:href="@{''(lang=en)}">En</a>
+                        <a class="language-selector" th:classappend="${#locale != null && #locale.language == 'fr'} ? 'active'"
+                           th:href="@{''(lang=fr)}">Fra</a>
+                        <a class="language-selector" th:classappend="${#locale != null && #locale.language == 'de'} ? 'active'"
+                           th:href="@{''(lang=de)}">Deu</a>
+                    </div>
+                </div>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
+                </form>
+                <div id="loadingSpinner" style="display: none;" th:text="#{loading}">Loading...</div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <!-- Active Trains Card -->
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div id="activeTrains" class="stats-number" th:text="${activeTrainsCount != null ? activeTrainsCount : '0'}"></div>
+                <div class="stats-label" th:text="#{active.trains}">Active Trains</div>
+                <div th:if="${activeTrainsGrowth != null}"
+                     th:class="${activeTrainsGrowth >= 0 ? 'text-success' : 'text-danger'}">
+                    <span th:text="${activeTrainsGrowth >= 0 ? '↑' : '↓'}"></span>
+                    <span th:text="${#numbers.formatDecimal(Math.abs(activeTrainsGrowth), 1, 1) + '%'}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div id="todayBookings" class="stats-number" th:text="${totalbookingCount != null ? totalbookingCount : '0'}"></div>
+                <div class="stats-label" th:text="#{today.trains}">Today's Bookings</div>
+                <div th:if="${totalbookingGrowth != null}"
+                     th:class="${totalbookingGrowth >= 0 ? 'text-success' : 'text-danger'}">
+                    <span th:text="${totalbookingGrowth >= 0 ? '↑' : '↓'}"></span>
+                    <span th:text="${#numbers.formatDecimal(Math.abs(totalbookingGrowth), 1, 1) + '%'}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div id="delayedTrains" class="stats-number" th:text="${delayedTrainsCount != null ? delayedTrainsCount : '0'}"></div>
+                <div class="stats-label" th:text="#{delayed.trains}">Delayed Trains</div>
+                <div th:if="${delayedTrainsGrowth != null}"
+                     th:class="${delayedTrainsGrowth >= 0 ? 'text-success' : 'text-danger'}">
+                    <span th:text="${delayedTrainsGrowth >= 0 ? '↑' : '↓'}"></span>
+                    <span th:text="${#numbers.formatDecimal(Math.abs(delayedTrainsGrowth), 1, 1) + '%'}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div id="activeUsers" class="stats-number" th:text="${activeUsersCount != null ? activeUsersCount : '0'}"></div>
+                <div class="stats-label" th:text="#{active.users}">Active Users</div>
+                <div th:if="${activeUsersGrowth != null}"
+                     th:class="${activeUsersGrowth >= 0 ? 'text-success' : 'text-danger'}">
+                    <span th:text="${activeUsersGrowth >= 0 ? '↑' : '↓'}"></span>
+                    <span th:text="${#numbers.formatDecimal(Math.abs(activeUsersGrowth), 1, 1) + '%'}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="card">
+        <div class="card-header" th:text="#{upload.profile}">Upload Profile Picture</div>
+        <div class="card-body">
+            <form th:action="@{/upload}" method="post" enctype="multipart/form-data" class="mb-3">
+                <div class="form-group">
+                    <label for="file" class="form-label" th:text="#{choose.profile.picture}">Choose Profile Picture</label>
+                    <input type="file" class="form-control" id="file" name="file"
+                           accept="image/jpeg,image/png,image/gif" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3" th:text="#{upload}">Upload</button>
+            </form>
+
+            <!-- Success Message -->
+            <div th:if="${message}" class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Error Message -->
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Image preview -->
+            <div th:if="${filename}" class="mt-3">
+                <img th:src="@{'/uploads/' + ${filename}}" class="img-thumbnail"
+                     alt="Profile Picture" style="max-width: 200px;">
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0" th:text="#{train.location}">Train Locations</h5>
+                </div>
+                <div class="card-body">
+                    <div id="map"  th:text="#{map}" style="height: 400px; background-color: #eee;">
+                        <!-- Placeholder for map -->
+                        Map will be displayed here
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0" th:text="#{active.trains.and.users}">Active Trains and Users</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="activeTrainsUsersChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs mb-3" id="dashboardTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'schedules' ? 'active' : ''}"
+                            id="schedules-tab" data-bs-toggle="tab" data-bs-target="#schedules"
+                            type="button" role="tab" aria-selected="${activeTab == 'schedules'}">
+                        Schedules
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'trains' ? 'active' : ''}"
+                            id="trains-tab" data-bs-toggle="tab" data-bs-target="#trains"
+                            type="button" role="tab" aria-selected="${activeTab == 'trains'}">
+                        Trains
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" th:classappend="${activeTab == 'bookings' ? 'active' : ''}"
+                            id="bookings-tab" data-bs-toggle="tab" data-bs-target="#bookings"
+                            type="button" role="tab" aria-selected="${activeTab == 'bookings'}">
+                        Bookings
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="dashboardTabContent">
+                <!-- Common Controls for All Tabs -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <select class="form-select" id="pageSize" onchange="search()">
+                            <option value="10" th:selected="${size == 10}">10 per page</option>
+                            <option value="25" th:selected="${size == 25}">25 per page</option>
+                            <option value="50" th:selected="${size == 50}">50 per page</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter" onchange="search()">
+                            <option value="all" th:selected="${status == 'all'}">All Status</option>
+                            <!-- Schedule Status Options -->
+                            <th:block th:if="${activeTab == 'schedules'}">
+                                <option value="SCHEDULED" th:selected="${status == 'SCHEDULED'}">Scheduled</option>
+                                <option value="DELAYED" th:selected="${status == 'DELAYED'}">Delayed</option>
+                                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                            </th:block>
+                            <!-- Train Status Options -->
+                            <th:block th:if="${activeTab == 'trains'}">
+                                <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Active</option>
+                                <option value="MAINTENANCE" th:selected="${status == 'MAINTENANCE'}">Maintenance</option>
+                                <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">Inactive</option>
+                                <option value="SCHEDULED" th:selected="${status == 'SCHEDULED'}">Scheduled</option>
+                                <option value="CANCELLED" th:selected="${status == 'CANCELED'}">Cancelled</option>
+                                <option value="OUT_OF_SERVICE" th:selected="${status == 'OUT_OF_SERVICE'}">Out of Service</option>
+                            </th:block>
+                            <!-- Booking Status Options -->
+                            <th:block th:if="${activeTab == 'bookings'}">
+                                <option value="CONFIRMED" th:selected="${status == 'CONFIRMED'}">Confirmed</option>
+                                <option value="PENDING" th:selected="${status == 'PENDING'}">Pending</option>
+                                <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Cancelled</option>
+                            </th:block>
+                        </select>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Schedules Tab Content -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'schedules' ? 'show active' : ''}"
+                     id="schedules" role="tabpanel" aria-labelledby="schedules-tab">
+                    <!-- Column Search Fields for Schedules -->
+                    <div class="col-md-12 mb-3">
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" placeholder="Schedule ID"
+                                       id="scheduleIdSearch">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" placeholder="Train No."
+                                       id="trainNoSearch">
+                            </div>
+                            <div class="col-md-2">
+                                <button onclick="searchSchedules()" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Schedules Table -->
+                    <div class="table-responsive">
+                        <div th:if="${data == null}">
+                            <p>No data available in model</p>
+                        </div>
+                        <div th:if="${data != null and #lists.isEmpty(data)}">
+                            <p>Data list is empty</p>
+                        </div>
+                        <div th:if="${data != null}">
+                            <p>Number of items: <span th:text="${#lists.size(data)}"></span></p>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Schedule ID</th>
+                                <th>Train No.</th>
+                                <th>Departure</th>
+                                <th>Arrival</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="schedule : ${data}">
+                                <td th:text="${schedule.id}"></td>
+                                <td th:text="${schedule.trainNo}"></td>
+                                <td th:text="${#temporals.format(schedule.departureTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                <td th:text="${#temporals.format(schedule.arrivalTime, 'dd-MM-yyyy HH:mm')}"></td>
+                                <td>
+                                    <span th:class="${'badge ' +
+                                        (schedule.status == 'SCHEDULED' ? 'bg-success' :
+                                        (schedule.status == 'DELAYED' ? 'bg-warning' : 'bg-danger'))}"
+                                          th:text="${schedule.status}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a th:href="@{'/schedules/edit/' + ${schedule.id}}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                th:onclick="'confirmDelete(\'' + ${schedule.id} + '\', \'schedules\')'">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Trains Tab Content -->
+                <div class="tab-pane fade" th:classappend="${activeTab == 'trains' ? 'show active' : ''}"
+                     id="trains" role="tabpanel" aria-labelledby="trains-tab">
+                    <!-- Column Search Fields for Trains -->
+                    <div class="col-md-12 mb-3">
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <select class="form-control" id="trainStatusSearch">
+                                    <option value="">Select Status</option>
+                                    <option value="ACTIVE">Active</option>
+                                    <option value="MAINTENANCE">Maintenance</option>
+                                    <option value="INACTIVE">Inactive</option>
+                                    <option value="SCHEDULED">Scheduled</option>
+                                    <option value="CANCELLED">Cancelled</option>
+                                    <option value="OUT_OF_SERVICE">Out of Service</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button onclick="searchTrains()" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Trains Table -->
+                    <div class="table-responsive">
+                        <div th:if="${data == null}">
+                            <p>No data available in model</p>
+                        </div>
+                        <div th:if="${data != null and #lists.isEmpty(data)}">
+                            <p>Data list is empty</p>
+                        </div>
+                        <div th:if="${data != null}">
+                            <p>Number of items: <span th:text="${#lists.size(data)}"></span></p>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Train ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="train : ${data}">
+                                <td th:text="${train.id}"></td>
+                                <td th:text="${train.name}"></td>
+                                <td th:text="${train.type}"></td>
+                                <td th:text="${train.capacity}"></td>
+                                <td>
+                                    <span th:class="${'badge ' +
+                                        (train.status == 'ACTIVE' ? 'bg-success' :
+                                        (train.status == 'MAINTENANCE' ? 'bg-warning' : 'bg-danger'))}"
+                                          th:text="${train.status}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a th:href="@{'/trains/edit/' + ${train.id}}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                th:onclick="'confirmDelete(\'' + ${train.id} + '\', \'trains\')'">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bookings Tab Content -->
+            <div class="tab-pane fade" th:classappend="${activeTab == 'bookings' ? 'show active' : ''}"
+                 id="bookings" role="tabpanel" aria-labelledby="bookings-tab">
+                <!-- Column Search Fields for Bookings -->
+                <div class="col-md-12 mb-3">
+                    <div class="row g-2">
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" id="bookingDateSearch">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" class="form-control" placeholder="Train No."
+                                   id="bookingTrainNoSearch">
+                        </div>
+                        <div class="col-md-2">
+                            <button onclick="searchBookings()" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+                    <!-- Bookings Table -->
+                    <div class="table-responsive">
+                        <div th:if="${data == null}">
+                            <p>No data available in model</p>
+                        </div>
+                        <div th:if="${data != null and #lists.isEmpty(data)}">
+                            <p>Data list is empty</p>
+                        </div>
+                        <div th:if="${data != null}">
+                            <p>Number of items: <span th:text="${#lists.size(data)}"></span></p>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Passenger</th>
+                                <th>Train No.</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="booking : ${data}">
+                                <td th:text="${booking.id}"></td>
+                                <td th:text="${booking.passengerName}"></td>
+                                <td th:text="${booking.trainNo}"></td>
+                                <td th:text="${#temporals.format(booking.bookingDate, 'dd-MM-yyyy')}"></td>
+                                <td>
+                                    <span th:class="${'badge ' +
+                                        (booking.status == 'CONFIRMED' ? 'bg-success' :
+                                        (booking.status == 'PENDING' ? 'bg-warning' : 'bg-danger'))}"
+                                          th:text="${booking.status}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a th:href="@{'/bookings/edit/' + ${booking.id}}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                th:onclick="'confirmDelete(\'' + ${booking.id} + '\', \'bookings\')'">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- No Data Message -->
+                <div class="alert alert-info" th:if="${data == null || #lists.isEmpty(data)}">
+                    No data available
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-3"
+                     th:if="${data != null && !#lists.isEmpty(data)}">
+                    <div class="text-muted">
+                        Showing <span th:text="${#lists.size(data)}"></span> of
+                        <span th:text="${totalItems != null ? totalItems : 0}"></span> entries
+                    </div>
+
+                    <nav th:if="${totalPages != null && totalPages > 1}">
+                            <ul class="pagination mb-0">
+                                <!-- First Page -->
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link" th:href="@{${'/dashboard/' + activeTab}(page=0,size=${size},search=${search},status=${status})}"
+                                       aria-label="First">
+                                        <span aria-hidden="true">&laquo;&laquo;</span>
+                                    </a>
+                                </li>
+
+                                <!-- Previous Page -->
+                                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{${'/dashboard/' + activeTab}(page=${currentPage - 1},size=${size},search=${search},status=${status})}"
+                                       aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+
+                                <!-- Page Numbers -->
+                                <li class="page-item"
+                                    th:each="pageNum : ${#numbers.sequence(T(Math).max(0, currentPage - 2),
+                                                                   T(Math).min(totalPages - 1, currentPage + 2))}"
+                                    th:classappend="${pageNum == currentPage} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{${'/dashboard/' + activeTab}(page=${pageNum},size=${size},search=${search},status=${status})}"
+                                       th:text="${pageNum + 1}">1</a>
+                                </li>
+
+                                <!-- Next Page -->
+                                <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{${'/dashboard/' + activeTab}(page=${currentPage + 1},size=${size},search=${search},status=${status})}"
+                                       aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+
+                                <!-- Last Page -->
+                                <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{${'/dashboard/' + activeTab}(page=${totalPages - 1},size=${size},search=${search},status=${status})}"
+                                       aria-label="Last">
+                                        <span aria-hidden="true">&raquo;&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer class="bg-dark text-light text-center py-3">
+    <p class="mb-0" th:text="#{copyright}">© 2024 SmartRail - All Rights Reserved</p>
+</footer>
+<!-- Essential CSS Libraries -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
+
+<!-- Essential JavaScript Libraries -->
+<script src="/js/dashboard-functions.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<!-- Add this JavaScript at the end of your file -->
+<script>
+    // Dashboard search and pagination handler
+    class DashboardManager {
+        constructor() {
+            this.initializeEventListeners();
+        }
+
+        initializeEventListeners() {
+            // Page size change handler
+            const pageSize = document.getElementById('pageSize');
+            if (pageSize) {
+                pageSize.addEventListener('change', () => this.handlePageSizeChange());
+            }
+
+            // Status filter change handler
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                statusFilter.addEventListener('change', () => this.handleStatusChange());
+            }
+
+            // Search button handlers
+            const searchButtons = {
+                'schedules': ['scheduleIdSearch', 'trainNoSearch'],
+                'trains': ['trainStatusSearch'],
+                'bookings': ['bookingDateSearch', 'bookingTrainNoSearch']
+            };
+
+            Object.entries(searchButtons).forEach(([tab, fields]) => {
+                const button = document.querySelector(`#${tab} button`);
+                if (button) {
+                    button.addEventListener('click', () => this.handleSearch(tab, fields));
+                }
+            });
+
+            // Initialize instant search on input fields
+            this.initializeInstantSearch();
+        }
+
+        handlePageSizeChange() {
+            const pageSize = document.getElementById('pageSize').value;
+            const activeTab = this.getActiveTab();
+            const currentParams = new URLSearchParams(window.location.search);
+
+            currentParams.set('size', pageSize);
+            currentParams.set('page', '0'); // Reset to first page when changing page size
+
+            this.navigateWithParams(activeTab, currentParams);
+        }
+
+        handleStatusChange() {
+            const status = document.getElementById('statusFilter').value;
+            const activeTab = this.getActiveTab();
+            const currentParams = new URLSearchParams(window.location.search);
+
+            if (status === 'all') {
+                currentParams.delete('status');
+            } else {
+                currentParams.set('status', status);
+            }
+            currentParams.set('page', '0'); // Reset to first page when filtering
+
+            this.navigateWithParams(activeTab, currentParams);
+        }
+
+        handleSearch(tab, fields) {
+            const params = new URLSearchParams();
+            const pageSize = document.getElementById('pageSize').value;
+            const status = document.getElementById('statusFilter').value;
+
+            // Add search parameters
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field && field.value) {
+                    params.append(fieldId.replace('Search', ''), field.value);
+                }
+            });
+
+            // Add common parameters
+            params.set('size', pageSize);
+            if (status !== 'all') {
+                params.set('status', status);
+            }
+            params.set('page', '0'); // Reset to first page when searching
+
+            this.navigateWithParams(tab, params);
+        }
+
+        initializeInstantSearch() {
+            const searchInputs = document.querySelectorAll('input[type="text"], input[type="date"], select');
+            searchInputs.forEach(input => {
+                input.addEventListener('input', debounce(() => {
+                    const activeTab = this.getActiveTab();
+                    if (activeTab) {
+                        const fields = this.getSearchFieldsForTab(activeTab);
+                        this.handleSearch(activeTab, fields);
+                    }
+                }, 500));
+            });
+        }
+
+        getSearchFieldsForTab(tab) {
+            const searchFields = {
+                'schedules': ['scheduleIdSearch', 'trainNoSearch'],
+                'trains': ['trainStatusSearch'],
+                'bookings': ['bookingDateSearch', 'bookingTrainNoSearch']
+            };
+            return searchFields[tab] || [];
+        }
+
+        getActiveTab() {
+            const activeTabElement = document.querySelector('.nav-link.active');
+            return activeTabElement ? activeTabElement.id.replace('-tab', '') : null;
+        }
+
+        navigateWithParams(tab, params) {
+            const url = `/dashboard/${tab}?${params.toString()}`;
+            window.location.href = url;
+        }
+    }
+
+    // Debounce function to limit the rate of API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Initialize dashboard manager when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        new DashboardManager();
+    });
+
+</script>
+<script>
+    // Main Dashboard Management Class
+    class DashboardManager {
+        constructor() {
+            this.mapManager = null;
+            this.tableManagers = new Map();
+            this.searchTimeout = null;
+            this.currentPage = 0;
+            this.totalPages = 0;
+            this.itemsPerPage = 10;
+
+            // Initialize when DOM is loaded
+            document.addEventListener('DOMContentLoaded', () => this.initialize());
+        }
+
+        initialize() {
+            this.initializeMap();
+            this.initializeTables();
+            this.initializeEventListeners();
+            this.initializeCharts();
+            this.addFontAwesomeIcons();
+            this.initializeTrainLocationUpdates();
+        }
+
+        initializeEventListeners() {
+            // Search input listeners
+            document.querySelectorAll('[id$="SearchInput"]').forEach(input => {
+                input.addEventListener('input', this.debounce(() => this.handleSearch(input), 300));
+            });
+
+            // Status filter listeners
+            document.querySelectorAll('[id$="FilterStatus"]').forEach(filter => {
+                filter.addEventListener('change', () => this.handleSearch(filter));
+            });
+
+            // Page size listeners
+            document.querySelectorAll('[id$="ItemsPerPage"]').forEach(select => {
+                select.addEventListener('change', () => this.handlePageSizeChange(select));
+            });
+
+            // Tab change listeners
+            document.querySelectorAll('#dashboardTabs button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const tabId = e.target.getAttribute('data-bs-target').replace('#', '');
+                    window.location.href = `/dashboard?tab=${tabId}`;
+                });
+            });
+
+            // Logout button listeners
+            document.querySelectorAll('[data-logout-button]').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleLogout();
+                });
+            });
+        }
+
+        debounce(func, wait) {
+            return (...args) => {
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+
+
+        async handleLogout() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.content
+                    }
+                });
+
+                if (response.ok) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.href = '/login';
+                } else {
+                    throw new Error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred during logout. Please try again.');
+            } finally {
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+            }
+        }
+
+        async confirmDelete(id, type) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                try {
+                    const response = await fetch(`/${type}/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.content
+                        }
+                    });
+
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Delete failed');
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('An error occurred while deleting. Please try again.');
+                }
+            }
+        }
+
+        initializeMap() {
+            const mapElement = document.getElementById('map');
+            if (mapElement) {
+                this.mapManager = new TrainMapManager('map');
+            }
+        }
+
+        initializeTables() {
+            ['schedule', 'train', 'booking'].forEach(type => {
+                this.tableManagers.set(type, new TableManager(type));
+            });
+        }
+
+
+        addFontAwesomeIcons() {
+            const iconMap = {
+                'Dashboard': 'tachometer-alt',
+                'Train': 'train',
+                'Schedule': 'calendar-alt',
+                'User': 'users',
+                'Reports': 'chart-bar'
+            };
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                for (const [text, icon] of Object.entries(iconMap)) {
+                    if (link.textContent.includes(text)) {
+                        link.innerHTML = `<i class="fas fa-${icon} me-2"></i>${link.textContent}`;
+                        break;
+                    }
+                }
+            });
+        }
+
+        async initializeTrainLocationUpdates() {
+            if (!this.mapManager) return;
+
+            const updateLocations = async () => {
+                try {
+                    const response = await fetch('/api/train-locations');
+                    if (!response.ok) throw new Error('Failed to fetch train locations');
+
+                    const data = await response.json();
+                    this.mapManager.clearMap();
+
+                    data.forEach(train => {
+                        this.mapManager.addRoute(
+                            train.routeId,
+                            train.coordinates,
+                            train.trainName,
+                            `${train.departureStation} → ${train.arrivalStation}`
+                        );
+                    });
+                } catch (error) {
+                    console.error('Error updating train locations:', error);
+                }
+            };
+
+            await updateLocations();
+            setInterval(updateLocations, 30000);
+        }
+    }
+
+    // Initialize the dashboard manager
+    const dashboardManager = new DashboardManager();
+</script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // Retrieve data from Thymeleaf
+        var activeTrains = /*[[${activeTrainsData}]]*/ [];
+        var signedInUsers = /*[[${signedInUsersData}]]*/ [];
+
+        // Generate labels for the last 5 days
+        var labels = [];
+        for (var i = 4; i >= 0; i--) {
+            var date = new Date();
+            date.setDate(date.getDate() - i);
+            labels.push(date.toLocaleDateString());
+        }
+
+        // Create the chart
+        var ctx = document.getElementById('activeTrainsUsersChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Active Trains',
+                        data: activeTrains,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)', // Blue
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Signed-In Users',
+                        data: signedInUsers,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)', // Green
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Trains/Users'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Active Trains and Signed-In Users Over Time'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

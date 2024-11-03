@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Password Reset</title>
+  <link rel="stylesheet" href="/css/styles.css"> <!-- Include your CSS file -->
+  <style>
+    body {
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      text-align: center;
+    }
+
+    .icon-container {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    p {
+      color: #6b7280;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px solid #e5e7eb;
+    }
+
+    .visibility-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .strength-meter {
+      background-color: #e5e7eb;
+      border-radius: 2px;
+      height: 4px;
+      margin-bottom: 10px;
+    }
+
+    .strength-bar {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    .requirements {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .requirement {
+      color: #6b7280;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 10px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 20px;
+    }
+
+    .link {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="icon-container">
+      <span class="icon">🔒</span>
+    </div>
+    <h1>Create New Password</h1>
+    <p>Make it strong and memorable</p>
+
+    <div th:if="${error}" class="alert alert-danger">
+      <strong th:text="${error}">Error message</strong>
+    </div>
+
+    <form th:action="@{/reset}" method="post" class="form">
+      <div class="input-group">
+        <input type="password" name="newPassword" placeholder="New password" required class="input" id="newPassword" />
+        <button type="button" onclick="toggleVisibility('newPassword')" class="visibility-toggle">👁️</button>
+      </div>
+      <div class="strength-meter" id="strengthMeter">
+        <div class="strength-bar" id="strengthBar"></div>
+      </div>
+      <div class="requirements">
+        <div class="requirement" id="lengthReq">✓ At least 8 characters</div>
+        <div class="requirement" id="upperReq">○ One uppercase letter</div>
+        <div class="requirement" id="numberReq">○ One number</div>
+      </div>
+
+      <div class="input-group">
+        <input type="password" name="confirmPassword" placeholder="Confirm password" required class="input" id="confirmPassword" />
+        <button type="button" onclick="toggleVisibility('confirmPassword')" class="visibility-toggle">👁️</button>
+      </div>
+
+      <button type="submit" class="submit-button">Reset Password</button>
+    </form>
+    <div class="footer">
+      <a th:text="@{/login}" class="link">Back to Login</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // JavaScript to handle password strength and visibility toggle
+  const newPasswordInput = document.getElementById('newPassword');
+  const strengthBar = document.getElementById('strengthBar');
+  const lengthReq = document.getElementById('lengthReq');
+  const upperReq = document.getElementById('upperReq');
+  const numberReq = document.getElementById('numberReq');
+
+  newPasswordInput.addEventListener('input', () => {
+    const password = newPasswordInput.value;
+    const lengthCheck = password.length >= 8;
+    const upperCheck = /[A-Z]/.test(password);
+    const numberCheck = /[0-9]/.test(password);
+
+    lengthReq.textContent = lengthCheck ? '✓ At least 8 characters' : '○ At least 8 characters';
+    upperReq.textContent = upperCheck ? '✓ One uppercase letter' : '○ One uppercase letter';
+    numberReq.textContent = numberCheck ? '✓ One number' : '○ One number';
+
+    const strength = (lengthCheck + upperCheck + numberCheck) / 3 * 100;
+    strengthBar.style.width = strength + '%';
+    strengthBar.style.backgroundColor = strength < 33 ? 'red' : strength < 66 ? 'yellow' : 'green';
+  });
+
+  function toggleVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+</script>
+</body>
+</html>

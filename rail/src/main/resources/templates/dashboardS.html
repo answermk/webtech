@@ -1,0 +1,12 @@
+<!-- src/main/resources/templates/dashboardS.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Staff Dashboard</title>
+</head>
+<body>
+<h1>Staff Dashboard</h1>
+<p th:text="${'Welcome, ' + session.loggedInUser?.firstname + ' ' + session.loggedInUser?.lastname}"></p>
+<a href="/logout">Logout</a>
+</body>
+</html>

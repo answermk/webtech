@@ -1,0 +1,12 @@
+<!-- src/main/resources/templates/dashboardM.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manager Dashboard</title>
+</head>
+<body>
+<h1>Manager Dashboard</h1>
+<p th:text="${'Welcome, ' + session.loggedInUser?.firstname + ' ' + session.loggedInUser?.lastname}"></p>
+<a href="/logout">Logout</a>
+</body>
+</html>

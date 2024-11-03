@@ -1,0 +1,200 @@
+{
+  "en": {
+    "navigation": {
+      "about": "About",
+      "features": "Features",
+      "contact": "Contact"
+    },
+    "hero": {
+      "title": "Welcome to SmartRail",
+      "subtitle": "Revolutionizing your travel experience with seamless and efficient train journeys",
+      "login": "Login",
+      "signup": "Sign Up"
+    },
+    "about": {
+      "title": "About SmartRail",
+      "mission": {
+        "title": "Our Mission",
+        "text": "Sustainable, efficient, and comfortable rail transportation for all."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "text": "Smart rail systems connecting people and places seamlessly."
+      },
+      "goal": {
+        "title": "Our Goal",
+        "text": "To lead in smart rail solutions by 2030."
+      }
+    },
+    "features": {
+      "title": "Our Features",
+      "booking": {
+        "title": "Fast Booking",
+        "text": "Book tickets in just a few clicks with our intuitive interface."
+      },
+      "updates": {
+        "title": "Real-time Updates",
+        "text": "Stay informed with live updates on schedules and changes."
+      },
+      "eco": {
+        "title": "Eco-friendly Travel",
+        "text": "Reduce your carbon footprint with train travel."
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "form": {
+        "name": "Name",
+        "email": "Email",
+        "message": "Message",
+        "send": "Send Message"
+      },
+      "findUs": {
+        "title": "Find Us",
+        "social": "Connect with us on social media:",
+        "email": "Email:",
+        "phone": "Phone:"
+      }
+    },
+    "footer": {
+      "company": "Company",
+      "services": "Services",
+      "about": "About Us",
+      "careers": "Careers",
+      "partners": "Partners",
+      "booking": "Booking"
+    }
+  },
+  "fr": {
+    "navigation": {
+      "about": "À propos",
+      "features": "Fonctionnalités",
+      "contact": "Contact"
+    },
+    "hero": {
+      "title": "Bienvenue sur SmartRail",
+      "subtitle": "Révolutionner votre expérience de voyage avec des trajets en train fluides et efficaces",
+      "login": "Connexion",
+      "signup": "S'inscrire"
+    },
+    "about": {
+      "title": "À propos de SmartRail",
+      "mission": {
+        "title": "Notre Mission",
+        "text": "Transport ferroviaire durable, efficace et confortable pour tous."
+      },
+      "vision": {
+        "title": "Notre Vision",
+        "text": "Des systèmes ferroviaires intelligents reliant les personnes et les lieux de manière transparente."
+      },
+      "goal": {
+        "title": "Notre Objectif",
+        "text": "Devenir leader des solutions ferroviaires intelligentes d'ici 2030."
+      }
+    },
+    "features": {
+      "title": "Nos Fonctionnalités",
+      "booking": {
+        "title": "Réservation Rapide",
+        "text": "Réservez vos billets en quelques clics grâce à notre interface intuitive."
+      },
+      "updates": {
+        "title": "Mises à jour en temps réel",
+        "text": "Restez informé avec des mises à jour en direct sur les horaires et les changements."
+      },
+      "eco": {
+        "title": "Voyage Écologique",
+        "text": "Réduisez votre empreinte carbone en voyageant en train."
+      }
+    },
+    "contact": {
+      "title": "Contactez-nous",
+      "form": {
+        "name": "Nom",
+        "email": "Email",
+        "message": "Message",
+        "send": "Envoyer le message"
+      },
+      "findUs": {
+        "title": "Trouvez-nous",
+        "social": "Rejoignez-nous sur les réseaux sociaux :",
+        "email": "Email :",
+        "phone": "Téléphone :"
+      }
+    },
+    "footer": {
+      "company": "Entreprise",
+      "services": "Services",
+      "about": "À propos",
+      "careers": "Carrières",
+      "partners": "Partenaires",
+      "booking": "Réservation"
+    }
+  },
+  "de": {
+    "navigation": {
+      "about": "Über uns",
+      "features": "Funktionen",
+      "contact": "Kontakt"
+    },
+    "hero": {
+      "title": "Willkommen bei SmartRail",
+      "subtitle": "Revolutionieren Sie Ihr Reiseerlebnis mit nahtlosen und effizienten Zugfahrten",
+      "login": "Anmelden",
+      "signup": "Registrieren"
+    },
+    "about": {
+      "title": "Über SmartRail",
+      "mission": {
+        "title": "Unsere Mission",
+        "text": "Nachhaltiger, effizienter und komfortabler Schienenverkehr für alle."
+      },
+      "vision": {
+        "title": "Unsere Vision",
+        "text": "Intelligente Bahnsysteme, die Menschen und Orte nahtlos verbinden."
+      },
+      "goal": {
+        "title": "Unser Ziel",
+        "text": "Bis 2030 führend in intelligenten Bahntechnologien sein."
+      }
+    },
+    "features": {
+      "title": "Unsere Funktionen",
+      "booking": {
+        "title": "Schnelle Buchung",
+        "text": "Buchen Sie Tickets mit wenigen Klicks über unsere intuitive Oberfläche."
+      },
+      "updates": {
+        "title": "Echtzeit-Updates",
+        "text": "Bleiben Sie informiert mit Live-Updates zu Fahrplänen und Änderungen."
+      },
+      "eco": {
+        "title": "Umweltfreundliches Reisen",
+        "text": "Reduzieren Sie Ihren CO2-Fußabdruck durch Bahnreisen."
+      }
+    },
+    "contact": {
+      "title": "Kontakt",
+      "form": {
+        "name": "Name",
+        "email": "E-Mail",
+        "message": "Nachricht",
+        "send": "Nachricht senden"
+      },
+      "findUs": {
+        "title": "Finden Sie uns",
+        "social": "Folgen Sie uns in den sozialen Medien:",
+        "email": "E-Mail:",
+        "phone": "Telefon:"
+      }
+    },
+    "footer": {
+      "company": "Unternehmen",
+      "services": "Dienstleistungen",
+      "about": "Über uns",
+      "careers": "Karriere",
+      "partners": "Partner",
+      "booking": "Buchung"
+    }
+  }
+}

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartRail - Create Your Journey</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #34495e;
+      --accent-color: #3498db;
+      --background-color: #ecf0f1;
+      --text-color: #2c3e50;
+      --font-family-main: 'Inter', sans-serif;
+      --font-family-accent: 'Orbitron', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-family-main);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .registration-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      max-width: 800px;
+      width: 100%;
+      display: flex;
+      overflow: hidden;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .registration-image {
+      flex: 0 0 40%;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .registration-image h1 {
+      font-family: var(--font-family-accent);
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+    }
+
+    .registration-image p {
+      font-weight: 300;
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+
+    .registration-form {
+      flex: 0 0 60%;
+      padding: 40px;
+    }
+
+    .form-title {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 30px;
+    }
+
+    .form-title h2 {
+      font-family: var(--font-family-accent);
+      font-size: 2rem;
+      color: var(--secondary-color);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--secondary-color);
+    }
+    .text-danger{
+      color: darkred;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .registration-container {
+        flex-direction: column;
+      }
+
+      .registration-image, .registration-form {
+        flex: 1 0 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="registration-container">
+  <div class="registration-image">
+    <h1>SmartRail</h1>
+    <p>Embark on a journey of seamless travel and innovative transportation.
+      Join our community and experience the future of rail technology.</p>
+  </div>
+
+  <div class="registration-form">
+    <div class="form-title">
+      <h2>Create Your Account</h2>
+    </div>
+
+    <form th:action="@{/register}" th:object="${user}" method="post">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name<span class="text-danger">*</span></label>
+          <input type="text" th:field="*{firstname}" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name<span class="text-danger">*</span></label>
+          <input type="text" th:field="*{lastname}" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone Number<span class="text-danger">*</span></label>
+          <input type="tel" th:field="*{phonenumber}" required>
+        </div>
+        <div class="form-group">
+          <label>Email<span class="text-danger">*</span></label>
+          <input type="email" th:field="*{email}" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Select Role<span class="text-danger">*</span></label>
+          <select th:field="*{role}" required>
+            <option value="ROLE_USER">User</option>
+            <option value="ROLE_ADMIN">Admin</option>
+            <option value="ROLE_ACCOUNTANT">Accountant</option>
+            <option value="ROLE_MANAGER">Manager</option>
+            <option value="ROLE_STAFF">Staff</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Birth Date<span class="text-danger">*</span></label>
+          <input type="date" th:field="*{dob}" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Password<span class="text-danger">*</span></label>
+          <input type="password" th:field="*{password}" required>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password<span class="text-danger">*</span></label>
+          <input type="password" name="confirmPassword" required>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">Create Account</button>
+
+      <div class="login-link">
+        <span>Already have an account? </span>
+        <a th:href="@{/login}">Log In</a>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

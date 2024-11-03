@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartRail - Revolutionary Train Travel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <style>
+        /* Custom gradient background */
+        .hero-gradient {
+            background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%);
+        }
+
+        /* Animated wave effect */
+        .wave-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,213.3C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+            animation: wave-animation 10s linear infinite;
+        }
+
+        @keyframes wave-animation {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1440px; }
+        }
+
+        /* Enhanced train animation */
+        .animated-train {
+            animation: trainMove 20s linear infinite;
+            transform-origin: center;
+            filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.2));
+        }
+
+        @keyframes trainMove {
+            0% {
+                transform: translateX(-100%) scale(1);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateX(100%) scale(0.95);
+                opacity: 0;
+            }
+        }
+
+        /* Card hover effects */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Animated icon pulse */
+        .icon-pulse {
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Glassmorphism effect for nav */
+        .nav-glass {
+            background: rgba(30, 58, 138, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Custom form input styles */
+        .form-input {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="font-sans">
+<header class="fixed w-full z-50 transition-all duration-300" id="navbar">
+    <nav class="nav-glass">
+        <!-- Existing nav content with added padding and transitions -->
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <img th:src="@{/images/logo.png}" class="w-12 h-12 mr-3 transform hover:rotate-12 transition-transform duration-300" alt="SmartRail Logo"/>
+                <span class="font-bold text-2xl tracking-tight text-white">SmartRail</span>
+            </div>
+
+
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#about" class="text-white hover:text-blue-200 transition-colors duration-300" th:text="#{nav.about}">About</a>
+                <a href="#features" class="text-white hover:text-blue-200 transition-colors duration-300" th:text="#{nav.features}">Features</a>
+                <a href="#contact" class="text-white hover:text-blue-200 transition-colors duration-300" th:text="#{nav.contact}">Contact</a>
+
+                <div class="flex space-x-2 ml-8">
+                    <a href="?lang=en" class="px-3 py-1 rounded-full transition-colors duration-300"
+                       th:classappend="${#locale.language == 'en'} ? 'bg-blue-700' : 'hover:bg-blue-800'">EN</a>
+                    <a href="?lang=fr" class="px-3 py-1 rounded-full transition-colors duration-300"
+                       th:classappend="${#locale.language == 'fr'} ? 'bg-blue-700' : 'hover:bg-blue-800'">FR</a>
+                    <a href="?lang=de" class="px-3 py-1 rounded-full transition-colors duration-300"
+                       th:classappend="${#locale.language == 'de'} ? 'bg-blue-700' : 'hover:bg-blue-800'">DE</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main role="main">
+    <section class="hero-gradient text-white pt-32 pb-24 relative wave-container min-h-screen flex items-center">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0" data-aos="fade-right">
+                    <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight" th:text="#{hero.title}">
+                        Welcome to <br><span class="text-blue-300">SmartRail</span>
+                    </h1>
+                    <p class="text-xl mb-10 text-blue-100" th:text="#{hero.subtitle}">
+                        Revolutionizing your travel experience with seamless and efficient train journeys.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a th:href="@{/login}" class="bg-white text-blue-900 font-bold py-4 px-8 rounded-full hover:bg-blue-100 transition duration-300 transform hover:-translate-y-1" th:text="#{hero.login}">
+                            Login
+                        </a>
+                        <a th:href="@{/register}" class="bg-blue-600 text-white font-bold py-4 px-8 rounded-full hover:bg-blue-700 transition duration-300 transform hover:-translate-y-1" th:text="#{hero.signup}">
+                            Sign Up
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wave"></div>
+    </section>
+    <div class="flex flex-wrap gap-4">
+        <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+            <img th:src="@{/images/t1.jpeg}" alt="Train 1" class="wave-animation rounded-lg shadow-xl w-full h-auto delay-0"/>
+        </div>
+        <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+            <img th:src="@{/images/t2.jpeg}" alt="Train 2" class="wave-animation rounded-lg shadow-xl w-full h-auto delay-100"/>
+        </div>
+        <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+            <img th:src="@{/images/t3.jpeg}" alt="Train 3" class="wave-animation rounded-lg shadow-xl w-full h-auto delay-200"/>
+        </div>
+    </div>
+
+    <style>
+        @keyframes wave {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .wave-animation {
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        .delay-0 {
+            animation-delay: 0s;
+        }
+
+        .delay-100 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-200 {
+            animation-delay: 0.4s;
+        }
+    </style>
+
+
+    <section id="about" class="py-20 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8" th:text="#{about.title}">About SmartRail</h2>
+            <div class="flex flex-wrap">
+                <!-- Mission -->
+                <div class="w-full md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6 h-full">
+                        <h3 class="text-xl font-semibold mb-4" th:text="#{about.mission.title}">Our Mission</h3>
+                        <p th:text="#{about.mission.text}">Sustainable, efficient, and comfortable rail transportation for all.</p>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6 h-full">
+                        <h3 class="text-xl font-semibold mb-4" th:text="#{about.vision.title}">Our Vision</h3>
+                        <p th:text="#{about.vision.text}">Smart rail systems connecting people and places seamlessly.</p>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/3 px-4 mb-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6 h-full">
+                        <h3 class="text-xl font-semibold mb-4" th:text="#{about.goal.title}">Our Goal</h3>
+                        <p th:text="#{about.goal.text}">To lead in smart rail solutions by 2030.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section with Enhanced Cards -->
+    <section id="features" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center text-gray-900 mb-16" data-aos="fade-up" th:text="#{features.title}">Our Features</h2>
+            <div class="grid md:grid-cols-3 gap-12">
+                <!-- Feature Cards with Animation -->
+                <div class="feature-card bg-white rounded-xl shadow-lg p-8" data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-5xl text-blue-600 mb-6 icon-pulse">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4th:text=" th:text="#{features.booking.title}">
+                    Fast Booking
+                    </h3>
+                    <p th:text="#{features.booking.text}" class="text-gray-600">Book tickets in just a few clicks with our intuitive interface.</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl shadow-lg p-8" data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-5xl text-blue-600 mb-6 icon-pulse">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4" th:text="#{features.updates.title}">
+                    Real-time Updates on schedules and changes.
+                    </h3>
+                    <p th:text="#{features.updates.text}" class="text-gray-600">Stay informed with live updates</p>
+                </div>
+                <div class="feature-card bg-white rounded-xl shadow-lg p-8" data-aos="fade-up" data-aos-delay="100">
+                    <div class="text-5xl text-blue-600 mb-6 icon-pulse">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-4"  th:text="#{features.eco.title}">
+                    Eco-friendly Travel
+                    </h3>
+                    <p  class="text-gray-600" th:text="#{features.eco.text}">
+                    Reduce your carbon footprint with train travel..</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Contact Section with Enhanced Form -->
+    <section id="contact" class="py-24 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center text-gray-900 mb-16" data-aos="fade-up" th:text="#{contact.title}">Get in Touch</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="bg-white rounded-xl shadow-lg p-8" data-aos="fade-right">
+                    <form th:action="@{/contact}" method="post">
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2" th:text="#{contact.form.name}">Name</label>
+                            <input type="text" name="name" class="form-input w-full p-3 rounded-lg bg-gray-50">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2" th:text="#{contact.form.email}">Email</label>
+                            <input type="text" name="name" class="form-input w-full p-3 rounded-lg bg-gray-50">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 mb-2" th:text="#{contact.form.message}">Message</label>
+                            <input type="text" name="name" class="form-input w-full p-3 rounded-lg bg-gray-50">
+                        </div>
+
+
+                        <!-- Add more form fields similarly -->
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300" th:text="#{contact.form.send}">
+                            Send Message
+                        </button>
+                    </form>
+
+
+                    <div th:if="${successMessage}" class="mt-4 p-4 bg-green-100 text-green-700 rounded">
+                        <p th:text="${successMessage}">Message Sent</p>
+                    </div>
+
+                    <div th:if="${errorMessage}" class="mt-4 p-4 bg-red-100 text-red-700 rounded">
+                        <p th:text="${errorMessage}">Message Not Sent</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8" data-aos="fade-left">
+                    <div class="bg-white rounded-lg shadow-lg p-6 h-full">
+                        <h3 class="text-xl font-semibold mb-4" th:text="#{contact.findus.title}">Find Us</h3>
+                        <p class="mb-4" th:text="#{contact.findus.connect}">Connect with us on social media:</p>
+                        <div class="flex space-x-4 mb-6">
+                            <a href="#" class="text-blue-600 hover:text-blue-800"><i class="fab fa-facebook fa-2x"></i></a>
+                            <a href="#" class="text-blue-400 hover:text-blue-600"><i class="fab fa-twitter fa-2x"></i></a>
+                            <a href="#" class="text-blue-700 hover:text-blue-900"><i class="fab fa-linkedin fa-2x"></i></a>
+                            <a href="#" class="text-gray-800 hover:text-gray-600"><i class="fab fa-github fa-2x"></i></a>
+                        </div>
+                        <p th:text="#{contact.findus.email}">Email: info@smartrail.com</p>
+                        <p th:text="#{contact.findus.phone}">Phone: +250 784 567 890</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-blue-900 text-white py-8">
+    <div class="container mx-auto px-6">
+        <div class="flex flex-wrap">
+            <div class="w-full md:w-1/4 text-center md:text-left">
+                <h5  class="uppercase mb-6 font-bold" th:text="#{footer.title}">Company</h5>
+                <ul class="mb-4">
+                    <li class="mt-2">
+                        <a th:text="#{footer.about}" class="hover:underline text-gray-300 hover:text-white">About Us</a>
+                    </li>
+                    <li class="mt-2">
+                        <a th:text="#{footer.career}" class="hover:underline text-gray-300 hover:text-white">Careers</a>
+                    </li>
+                    <li class="mt-2">
+                        <a th:text="#{footer.partner}" class="hover:underline text-gray-300 hover:text-white">Partners</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="w-full md:w-1/4 text-center md:text-left">
+                <h5 th:text="#{footer.service}" class="uppercase mb-6 font-bold">Services</h5>
+                <ul class="mb-4">
+                    <li class="mt-2">
+                        <a th:text="#{footer.booking}" class="hover:underline text-gray-300 hover:text-white">Booking</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 1000,
+        once: true
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('py-2');
+            navbar.classList.remove('py-4');
+        } else {
+            navbar.classList.add('py-4');
+            navbar.classList.remove('py-2');
+        }
+    });
+</script>
+</body>
+</html>
